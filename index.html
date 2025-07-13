@@ -60,48 +60,51 @@
       border-color: #1e40af;
       box-shadow: 0 0 0 2px rgba(30, 64, 175, 0.1);
     }
-    .otp-row {
+
+    .otp-container {
       display: flex;
-      align-items: center;
       justify-content: space-between;
       margin-bottom: 20px;
       gap: 10px;
     }
     .otp-boxes {
       display: flex;
-      gap: 8px;
+      gap: 6px;
       flex: 1;
       justify-content: space-between;
     }
     .otp-boxes input {
-      width: 55px;
-      height: 55px;
+      width: 48px;
+      height: 48px;
       text-align: center;
-      font-size: 22px;
+      font-size: 20px;
       font-weight: bold;
       border: 2px solid #ccc;
-      border-radius: 10px;
-      transition: border-color 0.2s;
+      border-radius: 8px;
     }
     .otp-boxes input:focus {
       border-color: #1e40af;
       outline: none;
     }
+
     #otpBtn {
+      height: 48px;
+      padding: 0 16px;
       background: #1e40af;
       color: white;
       border: none;
       border-radius: 8px;
       font-weight: 600;
-      font-size: 14px;
+      font-size: 15px;
       cursor: pointer;
-      height: 55px;
-      padding: 0 18px;
+      white-space: nowrap;
     }
+
     #otpBtn:disabled {
       opacity: 0.6;
       cursor: not-allowed;
     }
+
     #submitBtn {
       width: 100%;
       padding: 16px;
@@ -113,17 +116,19 @@
       font-weight: 700;
       cursor: pointer;
       transition: background 0.3s ease;
-      margin-top: 20px;
+      margin-top: 10px;
     }
     #submitBtn:hover {
       background: #183399;
     }
+
     #message {
       margin-top: 16px;
       text-align: center;
       font-size: 14px;
       display: none;
     }
+
     .toast {
       position: fixed;
       top: 20px;
@@ -138,6 +143,7 @@
       transition: all 0.4s ease;
       z-index: 99;
     }
+
     .toast.show {
       opacity: 1;
       transform: translateY(0);
@@ -152,7 +158,7 @@
       <input type="email" id="email" placeholder="you@example.com" />
 
       <label for="otp">Enter OTP</label>
-      <div class="otp-row">
+      <div class="otp-container">
         <div class="otp-boxes">
           <input type="text" maxlength="1" class="otp-field" inputmode="numeric" pattern="[0-9]*" />
           <input type="text" maxlength="1" class="otp-field" inputmode="numeric" pattern="[0-9]*" />
