@@ -1,4 +1,5 @@
-<!DOCTYPE html><html lang="en">
+<!DOCTYPE html>
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
@@ -44,14 +45,14 @@
       font-weight: 600;
       color: #222;
     }
-    input[type="email"], input[type="number"] {
+    input[type="email"] {
       width: 100%;
       padding: 12px 14px;
       font-size: 16px;
       font-weight: bold;
       border: 1px solid #ccc;
       border-radius: 8px;
-      margin-bottom: 20px;
+      margin-bottom: 14px;
       color: #111;
       outline: none;
     }
@@ -61,57 +62,40 @@
     }
     .otp-row {
       display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
       gap: 10px;
     }
-    .otp-row input {
+    .otp-boxes {
+      display: flex;
+      gap: 6px;
       flex: 1;
-      margin-bottom: 0;
     }
-    button {
-      transition: transform 0.1s ease;
-    }
-    button:active {
-      transform: scale(0.96);
+    .otp-boxes input {
+      width: 100%;
+      max-width: 38px;
+      height: 44px;
+      text-align: center;
+      font-size: 16px;
+      font-weight: bold;
+      border: 1px solid #ccc;
+      border-radius: 6px;
     }
     #otpBtn {
-      padding: 0 16px;
       background: #1e40af;
       color: white;
       border: none;
       border-radius: 8px;
       font-weight: 600;
-      font-size: 15px;
-      height: 48px;
+      font-size: 14px;
       cursor: pointer;
-      position: relative;
+      height: 44px;
+      padding: 0 16px;
     }
     #otpBtn:disabled {
       opacity: 0.6;
       cursor: not-allowed;
-    }
-    #captchaContainer {
-      margin-top: 24px;
-    }
-    #captcha {
-      width: 100%;
-      padding: 10px 14px;
-      font-size: 15px;
-      border: 2px dashed #1e40af;
-      border-radius: 6px;
-      font-weight: bold;
-      color: #333;
-      background: #f0f4ff;
-      margin-bottom: 12px;
-    }
-    #resetCaptcha {
-      margin-top: -8px;
-      margin-bottom: 12px;
-      font-size: 13px;
-      color: #1e40af;
-      background: none;
-      border: none;
-      cursor: pointer;
-      text-align: left;
     }
     #submitBtn {
       width: 100%;
@@ -124,7 +108,7 @@
       font-weight: 700;
       cursor: pointer;
       transition: background 0.3s ease;
-      margin-top: 30px;
+      margin-top: 20px;
     }
     #submitBtn:hover {
       background: #183399;
@@ -153,9 +137,6 @@
       opacity: 1;
       transform: translateY(0);
     }
-    .hidden {
-      display: none;
-    }
   </style>
 </head>
 <body>
@@ -163,39 +144,54 @@
     <div class="card-header">🔐 Welcome Back</div>
     <div class="card-body">
       <label for="email">Email Address</label>
-      <input type="email" id="email" placeholder="you@example.com" /><label for="otp">Enter OTP</label>
-  <div class="otp-row">
-    <input type="number" id="otp" placeholder="5-digit OTP" inputmode="numeric" />
-    <button onclick="sendOTP();" id="otpBtn">Get OTP</button>
+      <input type="email" id="email" placeholder="you@example.com" />
+
+      <label for="otp">Enter OTP</label>
+      <div class="otp-row">
+        <div class="otp-boxes">
+          <input type="text" maxlength="1" class="otp-field" inputmode="numeric" pattern="[0-9]*" />
+          <input type="text" maxlength="1" class="otp-field" inputmode="numeric" pattern="[0-9]*" />
+          <input type="text" maxlength="1" class="otp-field" inputmode="numeric" pattern="[0-9]*" />
+          <input type="text" maxlength="1" class="otp-field" inputmode="numeric" pattern="[0-9]*" />
+          <input type="text" maxlength="1" class="otp-field" inputmode="numeric" pattern="[0-9]*" />
+        </div>
+        <button onclick="sendOTP();" id="otpBtn">Get OTP</button>
+      </div>
+
+      <button onclick="verifyOTP()" id="submitBtn">Submit</button>
+      <div id="message"></div>
+    </div>
   </div>
 
-  <div id="captchaContainer" class="hidden">
-    <label for="captcha">Captcha: <span id="captchaQuestion"></span></label>
-    <input type="number" id="captcha" placeholder="Answer" inputmode="numeric" />
-    <button id="resetCaptcha" onclick="generateCaptcha()">🔁 Reset Captcha</button>
-  </div>
+  <div id="toast" class="toast"></div>
 
-  <button onclick="verifyOTP()" id="submitBtn">Submit</button>
-  <div id="message"></div>
-</div>
-
-  </div>  <div id="toast" class="toast"></div>  <script>
+  <script>
     emailjs.init("XdjVi9bwwdY2h9WHD");
 
     let generatedOTP = "";
     let cooldownTime = 30;
     let isCooldown = false;
-    let captchaAnswer = 0;
 
     const emailInput = document.getElementById("email");
-    const otpInput = document.getElementById("otp");
-    const captchaInput = document.getElementById("captcha");
-    const captchaQ = document.getElementById("captchaQuestion");
-    const captchaContainer = document.getElementById("captchaContainer");
     const submitBtn = document.getElementById("submitBtn");
     const messageEl = document.getElementById("message");
     const otpBtn = document.getElementById("otpBtn");
     const toast = document.getElementById("toast");
+    const otpFields = document.querySelectorAll(".otp-field");
+
+    otpFields.forEach((input, idx) => {
+      input.addEventListener("input", () => {
+        input.value = input.value.replace(/\D/g, "");
+        if (input.value.length === 1 && idx < otpFields.length - 1) {
+          otpFields[idx + 1].focus();
+        }
+      });
+      input.addEventListener("keydown", (e) => {
+        if (e.key === "Backspace" && !input.value && idx > 0) {
+          otpFields[idx - 1].focus();
+        }
+      });
+    });
 
     function isDisposable(email) {
       const tempDomains = ["tempmail.com", "mailinator.com", "10minutemail.com", "guerrillamail.com"];
@@ -205,14 +201,6 @@
     function isValidEmail(email) {
       const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
       return regex.test(email);
-    }
-
-    function generateCaptcha() {
-      const a = Math.floor(Math.random() * 10 + 1);
-      const b = Math.floor(Math.random() * 10 + 1);
-      captchaAnswer = a + b;
-      captchaQ.textContent = `${a} + ${b}`;
-      captchaInput.value = "";
     }
 
     function sendOTP() {
@@ -226,12 +214,10 @@
       generatedOTP = Math.floor(10000 + Math.random() * 90000).toString();
       const params = { email, otp_code: generatedOTP };
 
-      showToast("📨 Sending OTP");
+      showToast("📨 Sending OTP...");
       emailjs.send("service_44phjaw", "template_lusyhse", params)
         .then(() => {
-          showToast("✅ OTP sent! You can resend in " + cooldownTime + "s");
-          captchaContainer.classList.remove("hidden");
-          generateCaptcha();
+          showToast("✅ OTP sent! Wait " + cooldownTime + "s to resend");
           startCooldown();
           submitBtn.disabled = false;
         })
@@ -255,11 +241,9 @@
     }
 
     function verifyOTP() {
-      const enteredOTP = otpInput.value.trim();
-      const enteredCaptcha = captchaInput.value.trim();
+      const enteredOTP = Array.from(otpFields).map(f => f.value).join("");
 
-      if (!enteredOTP) return showToast("❌ Please enter the OTP");
-      if (!enteredCaptcha || parseInt(enteredCaptcha) !== captchaAnswer) return showToast("❌ Invalid captcha");
+      if (enteredOTP.length !== 5) return showToast("❌ Please enter all 5 OTP digits");
 
       if (enteredOTP === generatedOTP) {
         messageEl.innerHTML = "<span style='color:green;font-weight:bold;font-size:16px;'>✅ Login Successful</span>";
@@ -274,5 +258,6 @@
       toast.classList.add("show");
       setTimeout(() => toast.classList.remove("show"), 3000);
     }
-  </script></body>
+  </script>
+</body>
 </html>
