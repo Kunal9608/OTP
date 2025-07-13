@@ -69,18 +69,23 @@
     }
     .otp-boxes {
       display: flex;
-      gap: 6px;
+      gap: 8px;
       flex: 1;
+      justify-content: space-between;
     }
     .otp-boxes input {
-      width: 100%;
-      max-width: 38px;
-      height: 44px;
+      width: 55px;
+      height: 55px;
       text-align: center;
-      font-size: 16px;
+      font-size: 22px;
       font-weight: bold;
-      border: 1px solid #ccc;
-      border-radius: 6px;
+      border: 2px solid #ccc;
+      border-radius: 10px;
+      transition: border-color 0.2s;
+    }
+    .otp-boxes input:focus {
+      border-color: #1e40af;
+      outline: none;
     }
     #otpBtn {
       background: #1e40af;
@@ -90,8 +95,8 @@
       font-weight: 600;
       font-size: 14px;
       cursor: pointer;
-      height: 44px;
-      padding: 0 16px;
+      height: 55px;
+      padding: 0 18px;
     }
     #otpBtn:disabled {
       opacity: 0.6;
