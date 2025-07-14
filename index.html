@@ -3,9 +3,9 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Email OTP Login</title>
-  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+  <title>Sign Up / Sign In</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
   <style>
     * { box-sizing: border-box; }
     body {
@@ -24,8 +24,18 @@
       width: 100%;
       max-width: 400px;
       overflow: hidden;
-      position: relative;
     }
+ #signupForm input[type="email"] {
+  margin-bottom: 14px;
+}
+
+#signupForm .pass-wrapper:first-of-type {
+  margin-bottom: 14px; /* Between password and confirm password */
+}
+
+#signinForm input[type="email"] {
+  margin-bottom: 14px;
+}
     .card-header {
       background: #1e40af;
       color: white;
@@ -45,91 +55,77 @@
       font-weight: 600;
       color: #222;
     }
-    input[type="email"] {
+    input[type="email"], input[type="password"], input[type="text"] {
       width: 100%;
       padding: 12px 14px;
       font-size: 16px;
       font-weight: bold;
       border: 1px solid #ccc;
       border-radius: 8px;
-      margin-bottom: 14px;
       color: #111;
       outline: none;
     }
-    input:focus {
-      border-color: #1e40af;
-      box-shadow: 0 0 0 2px rgba(30, 64, 175, 0.1);
-    }
-
-    .otp-container {
+    .otp-line {
       display: flex;
-      justify-content: space-between;
-      margin-bottom: 20px;
       gap: 10px;
+      align-items: center;
+      margin: 10px 0 20px;
     }
     .otp-boxes {
       display: flex;
       gap: 6px;
       flex: 1;
-      justify-content: space-between;
     }
-
-    .otp-boxes input:focus {
-      border-color: #1e40af;
-      outline: none;
+    .otp-boxes input {
+      width: 45px;
+      height: 50px;
+      text-align: center;
+      font-size: 20px;
+      font-weight: bold;
+      border: 2px solid #ccc;
+      border-radius: 8px;
     }
-
-.otp-boxes input {
-  width: 45px;
-  height: 45px;
-  text-align: center;
-  font-size: 20px;
-  font-weight: bold;
-  border: 2px solid #ccc;
-  border-radius: 8px;
-}
-#otpBtn {
-  height: 47px;
-  padding: 0 16px;
-  background: #1e40af;
-  color: white;
-  border: none;
-  border-radius: 8px;
-  font-weight: 600;
-  font-size: 15px;
-  cursor: pointer;
-  white-space: nowrap;
-}
-
-    #otpBtn:disabled {
-      opacity: 0.6;
-      cursor: not-allowed;
-    }
-
-    #submitBtn {
-      width: 100%;
-      padding: 16px;
+    #otpBtn {
+      height: 50px;
+      padding: 0 14px;
       background: #1e40af;
       color: white;
       border: none;
       border-radius: 8px;
-      font-size: 18px;
-      font-weight: 700;
+      font-weight: 600;
+      font-size: 14px;
       cursor: pointer;
-      transition: background 0.3s ease;
+      white-space: nowrap;
+    }
+    button {
+      width: 100%;
+      padding: 14px;
+      background: #1e40af;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
       margin-top: 10px;
     }
-    #submitBtn:hover {
-      background: #183399;
-    }
-
-    #message {
-      margin-top: 16px;
+    .link {
       text-align: center;
+      margin-top: 16px;
       font-size: 14px;
-      display: none;
     }
-
+    .link a {
+      color: #1e40af;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+    }
+    #message {
+      text-align: center;
+      margin-top: 16px;
+      font-size: 14px;
+      color: #dc2626;
+    }
     .toast {
       position: fixed;
       top: 20px;
@@ -144,33 +140,103 @@
       transition: all 0.4s ease;
       z-index: 99;
     }
-
     .toast.show {
       opacity: 1;
       transform: translateY(0);
     }
+    .fade-slide {
+      animation: fadeSlide 0.4s ease both;
+    }
+    @keyframes fadeSlide {
+      0% {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      100% {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+.pass-wrapper {
+  position: relative;
+  margin-bottom: 14px;
+}
+.pass-wrapper input {
+  width: 100%;
+  padding: 12px 42px 12px 14px; /* left 14px, right 42px for the eye */
+  font-size: 16px;
+  font-weight: bold;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  color: #111;
+  outline: none;
+}
+.eye-btn {
+  position: absolute;
+  right: 12px; /* distance from right edge */
+  top: 50%;    /* vertical center */
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 18px;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 24px;
+  width: 24px;
+}
   </style>
 </head>
 <body>
   <div class="card">
-    <div class="card-header">🔐 Welcome Back</div>
+    <div class="card-header" id="formTitle">📝 Sign Up</div>
     <div class="card-body">
-      <label for="email">Email Address</label>
-      <input type="email" id="email" placeholder="you@example.com" />
-
-      <label for="otp">Enter OTP</label>
-      <div class="otp-container">
-        <div class="otp-boxes">
-          <input type="text" maxlength="1" class="otp-field" inputmode="numeric" pattern="[0-9]*" />
-          <input type="text" maxlength="1" class="otp-field" inputmode="numeric" pattern="[0-9]*" />
-          <input type="text" maxlength="1" class="otp-field" inputmode="numeric" pattern="[0-9]*" />
-          <input type="text" maxlength="1" class="otp-field" inputmode="numeric" pattern="[0-9]*" />
-          <input type="text" maxlength="1" class="otp-field" inputmode="numeric" pattern="[0-9]*" />
+      <div id="signupForm" class="fade-slide">
+        <label>Email</label>
+        <input type="email" id="signupEmail" placeholder="you@gmail.com" />
+        
+        <label>Password</label>
+        <div class="pass-wrapper">
+          <input type="password" id="signupPassword" placeholder="Enter password" inputmode="email" />
+          <button type="button" class="eye-btn" onclick="togglePassword('signupPassword', this)">👁</button>
         </div>
-        <button onclick="sendOTP();" id="otpBtn">Get OTP</button>
+
+        <label>Confirm Password</label>
+        <div class="pass-wrapper">
+          <input type="password" id="signupConfirm" placeholder="Re-enter password" inputmode="email" />
+          <button type="button" class="eye-btn" onclick="togglePassword('signupConfirm', this)">👁</button>
+        </div>
+
+        <label>Enter OTP</label>
+        <div class="otp-line">
+          <div class="otp-boxes">
+            <input type="text" maxlength="1" class="otp-field" inputmode="numeric" />
+            <input type="text" maxlength="1" class="otp-field" inputmode="numeric" />
+            <input type="text" maxlength="1" class="otp-field" inputmode="numeric" />
+            <input type="text" maxlength="1" class="otp-field" inputmode="numeric" />
+            <input type="text" maxlength="1" class="otp-field" inputmode="numeric" />
+          </div>
+          <button onclick="sendOTP();" id="otpBtn">Get OTP</button>
+        </div>
+        <button onclick="verifySignup()">Submit</button>
+        <div class="link">Already user? <a onclick="toggleForm()">Sign in</a></div>
       </div>
 
-      <button onclick="verifyOTP()" id="submitBtn">Submit</button>
+      <div id="signinForm" style="display:none;">
+        <label>Email</label>
+        <input type="email" id="signinEmail" placeholder="Enter email" />
+        <label>Password</label>
+        <div class="pass-wrapper">
+          <input type="password" id="signinPassword" placeholder="Enter password" inputmode="email" />
+          <button type="button" class="eye-btn" onclick="togglePassword('signinPassword', this)">👁</button>
+        </div>
+        <button onclick="verifySignin()">Login</button>
+        <div class="link">New user? <a onclick="toggleForm()">Sign up</a></div>
+      </div>
+
       <div id="message"></div>
     </div>
   </div>
@@ -180,95 +246,150 @@
   <script>
     emailjs.init("XdjVi9bwwdY2h9WHD");
 
-    let generatedOTP = "";
-    let cooldownTime = 30;
-    let isCooldown = false;
-
-    const emailInput = document.getElementById("email");
-    const submitBtn = document.getElementById("submitBtn");
-    const messageEl = document.getElementById("message");
-    const otpBtn = document.getElementById("otpBtn");
-    const toast = document.getElementById("toast");
     const otpFields = document.querySelectorAll(".otp-field");
+    const toast = document.getElementById("toast");
+    const otpBtn = document.getElementById("otpBtn");
+    const signupForm = document.getElementById("signupForm");
+    const signinForm = document.getElementById("signinForm");
+    const title = document.getElementById("formTitle");
+    let generatedOTP = "";
+    let resendDelay = 30;
+    let resendTimer;
 
-    otpFields.forEach((input, idx) => {
+    otpFields.forEach((input, index) => {
       input.addEventListener("input", () => {
         input.value = input.value.replace(/\D/g, "");
-        if (input.value.length === 1 && idx < otpFields.length - 1) {
-          otpFields[idx + 1].focus();
+        if (input.value && index < otpFields.length - 1) {
+          otpFields[index + 1].focus();
         }
       });
       input.addEventListener("keydown", (e) => {
-        if (e.key === "Backspace" && !input.value && idx > 0) {
-          otpFields[idx - 1].focus();
+        if (e.key === "Backspace" && !input.value && index > 0) {
+          otpFields[index - 1].focus();
         }
       });
     });
 
-    function isDisposable(email) {
-      const tempDomains = ["tempmail.com", "mailinator.com", "10minutemail.com", "guerrillamail.com"];
-      return tempDomains.some(domain => email.endsWith("@" + domain));
-    }
-
-    function isValidEmail(email) {
-      const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      return regex.test(email);
+    function showToast(msg) {
+      const isError = msg.trim().startsWith("❌");
+      if (isError) {
+        document.getElementById("message").textContent = msg;
+      } else {
+        toast.textContent = msg;
+        toast.classList.add("show");
+        setTimeout(() => {
+          toast.classList.remove("show");
+        }, 3000);
+        document.getElementById("message").textContent = "";
+      }
     }
 
     function sendOTP() {
-      const email = emailInput.value.trim();
+  const email = document.getElementById("signupEmail").value.trim();
+  const pass = document.getElementById("signupPassword").value.trim();
+  const confirm = document.getElementById("signupConfirm").value.trim();
 
-      if (!email) return showToast("❌ Please enter your email");
-      if (!isValidEmail(email)) return showToast("❌ Invalid email format");
-      if (isDisposable(email)) return showToast("❌ Disposable email not allowed");
-      if (isCooldown) return;
+  if (!email.endsWith("@gmail.com")) return showToast("❌ Only Gmail allowed!");
+  if (email === "kunaldixit.233860@gmail.com") return showToast("❌ Email already registered!");
+  if (pass.length < 6) return showToast("❌ Password must be at least 6 characters!");
+  if (pass !== confirm) return showToast("❌ Passwords do not match!");
 
-      generatedOTP = Math.floor(10000 + Math.random() * 90000).toString();
-      const params = { email, otp_code: generatedOTP };
+  generatedOTP = Math.floor(10000 + Math.random() * 90000).toString();
 
-      showToast("📨 Sending OTP...");
-      emailjs.send("service_44phjaw", "template_lusyhse", params)
-        .then(() => {
-          showToast("✅ OTP sent! Wait " + cooldownTime + "s to resend");
-          startCooldown();
-          submitBtn.disabled = false;
-        })
-        .catch(() => showToast("❌ Failed to send OTP"));
-    }
+  // ✅ Show sending status toast
+  showToast("📨 Sending OTP...");
 
-    function startCooldown() {
-      isCooldown = true;
-      let timeLeft = cooldownTime;
+  emailjs.send("service_44phjaw", "template_lusyhse", {
+    email: email,
+    otp_code: generatedOTP,
+  }).then(() => {
+    showToast("✅ OTP sent to your email!");
+    startResendTimer();
+  }).catch(() => {
+    showToast("❌ Failed to send OTP!");
+  });
+}
+
+    function startResendTimer() {
       otpBtn.disabled = true;
-      const interval = setInterval(() => {
-        otpBtn.textContent = `Wait (${timeLeft--}s)`;
-        if (timeLeft < 0) {
-          clearInterval(interval);
+      let timeLeft = resendDelay;
+      otpBtn.textContent = `Resend in ${timeLeft}s`;
+
+      resendTimer = setInterval(() => {
+        timeLeft--;
+        otpBtn.textContent = `Resend in ${timeLeft}s`;
+        if (timeLeft <= 0) {
+          clearInterval(resendTimer);
           otpBtn.disabled = false;
-          otpBtn.textContent = "Resend OTP";
-          isCooldown = false;
-          cooldownTime += 30;
+          otpBtn.textContent = "Get OTP";
+          resendDelay += 30;
         }
       }, 1000);
     }
 
-    function verifyOTP() {
+    function verifySignup() {
+      const email = document.getElementById("signupEmail").value.trim();
+      const pass = document.getElementById("signupPassword").value.trim();
+      const confirm = document.getElementById("signupConfirm").value.trim();
       const enteredOTP = Array.from(otpFields).map(f => f.value).join("");
 
-      if (enteredOTP.length !== 5) return showToast("❌ Please enter all 5 OTP digits");
+      if (!email || !pass || !confirm || enteredOTP.length !== 5)
+        return showToast("❌ All fields and 5-digit OTP are required");
+      if (!email.endsWith("@gmail.com")) return showToast("❌ Only Gmail allowed");
+      if (email === "kunaldixit.233860@gmail.com") return showToast("❌ Email already registered");
+      if (pass.length < 6 || pass !== confirm) return showToast("❌ Passwords must match & be 6+ chars");
+      if (enteredOTP !== generatedOTP) return showToast("❌ Incorrect OTP");
 
-      if (enteredOTP === generatedOTP) {
-        messageEl.innerHTML = "<span style='color:green;font-weight:bold;font-size:16px;'>✅ Login Successful</span>";
-      } else {
-        messageEl.innerHTML = "<span style='color:red;font-weight:bold;font-size:16px;'>❌ Invalid OTP</span>";
-      }
-      messageEl.style.display = "block";
+      sessionStorage.setItem("tempUser", JSON.stringify({ email, pass }));
+      showToast("✅ Registered successfully! Now log in.");
+      toggleForm();
+      document.getElementById("signinEmail").value = email;
+      document.getElementById("signinPassword").value = pass;
     }
 
-    function showToast(msg) {
-      toast.textContent = msg;
-      toast.classList.add("show");
-      setTimeout(() => toast.classList.remove("show"), 3000);
+    function verifySignin() {
+      const email = document.getElementById("signinEmail").value.trim();
+      const pass = document.getElementById("signinPassword").value.trim();
+      const saved = JSON.parse(sessionStorage.getItem("tempUser"));
+
+      if (
+        (email === "kunaldixit.233860@gmail.com" && pass === "123456") ||
+        (saved && saved.email === email && saved.pass === pass)
+      ) {
+        showToast("✅ Logged in successfully!");
+      } else {
+        showToast("❌ Invalid credentials");
+      }
+    }
+
+    function toggleForm() {
+      signupForm.classList.remove("fade-slide");
+      signinForm.classList.remove("fade-slide");
+
+      if (signupForm.style.display === "none") {
+        signupForm.style.display = "block";
+        signinForm.style.display = "none";
+        title.textContent = "📝 Sign Up";
+        signupForm.classList.add("fade-slide");
+      } else {
+        signupForm.style.display = "none";
+        signinForm.style.display = "block";
+        title.textContent = "🔐 Sign In";
+        signinForm.classList.add("fade-slide");
+      }
+
+      document.getElementById("message").textContent = "";
+    }
+
+    function togglePassword(fieldId, btn) {
+      const input = document.getElementById(fieldId);
+      if (input.type === "password") {
+        input.type = "text";
+        btn.textContent = "🙈";
+      } else {
+        input.type = "password";
+        btn.textContent = "👁";
+      }
     }
   </script>
 </body>
