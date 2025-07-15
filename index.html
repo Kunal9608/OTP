@@ -24,6 +24,7 @@
       width: 100%;
       max-width: 400px;
       overflow: hidden;
+      position: relative;
     }
     #signupForm input[type="email"],
     #signinForm input[type="email"] {
@@ -184,6 +185,16 @@
       height: 24px;
       width: 24px;
     }
+    .checkmark {
+      position: absolute;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 48px;
+      color: green;
+      animation: fadeSlide 0.5s ease;
+      z-index: 10;
+    }
   </style>
 </head>
 <body>
@@ -197,23 +208,23 @@
         <label>Password</label>
         <div class="pass-wrapper">
           <input type="password" id="signupPassword" placeholder="Enter password" inputmode="email" />
-          <button type="button" class="eye-btn" onclick="togglePassword('signupPassword', this)">👁</button>
+          <button type="button" class="eye-btn" aria-label="Toggle password" onclick="togglePassword('signupPassword', this)">👁</button>
         </div>
 
         <label>Confirm Password</label>
         <div class="pass-wrapper">
           <input type="password" id="signupConfirm" placeholder="Re-enter password" inputmode="email" />
-          <button type="button" class="eye-btn" onclick="togglePassword('signupConfirm', this)">👁</button>
+          <button type="button" class="eye-btn" aria-label="Toggle password" onclick="togglePassword('signupConfirm', this)">👁</button>
         </div>
 
         <label>Enter OTP</label>
         <div class="otp-line">
           <div class="otp-boxes">
-            <input type="text" maxlength="1" class="otp-field" inputmode="numeric" />
-            <input type="text" maxlength="1" class="otp-field" inputmode="numeric" />
-            <input type="text" maxlength="1" class="otp-field" inputmode="numeric" />
-            <input type="text" maxlength="1" class="otp-field" inputmode="numeric" />
-            <input type="text" maxlength="1" class="otp-field" inputmode="numeric" />
+            <input type="text" maxlength="1" class="otp-field" inputmode="numeric" pattern="\d*" />
+            <input type="text" maxlength="1" class="otp-field" inputmode="numeric" pattern="\d*" />
+            <input type="text" maxlength="1" class="otp-field" inputmode="numeric" pattern="\d*" />
+            <input type="text" maxlength="1" class="otp-field" inputmode="numeric" pattern="\d*" />
+            <input type="text" maxlength="1" class="otp-field" inputmode="numeric" pattern="\d*" />
           </div>
           <button onclick="sendOTP();" id="otpBtn">Get OTP</button>
         </div>
@@ -227,7 +238,7 @@
         <label>Password</label>
         <div class="pass-wrapper">
           <input type="password" id="signinPassword" placeholder="Enter password" inputmode="email" />
-          <button type="button" class="eye-btn" onclick="togglePassword('signinPassword', this)">👁</button>
+          <button type="button" class="eye-btn" aria-label="Toggle password" onclick="togglePassword('signinPassword', this)">👁</button>
         </div>
         <button onclick="verifySignin()">Login</button>
         <div class="link">New user? <a onclick="toggleForm()">Sign up</a></div>
@@ -278,6 +289,14 @@
         }, 3000);
         document.getElementById("message").textContent = "";
       }
+    }
+
+    function showCheckAnimation() {
+      const mark = document.createElement("div");
+      mark.className = "checkmark";
+      mark.innerText = "✔️";
+      document.body.appendChild(mark);
+      setTimeout(() => mark.remove(), 2000);
     }
 
     function sendOTP() {
@@ -338,8 +357,11 @@
         return showToast("❌ Incorrect OTP");
       }
 
+      otpFields.forEach(f => f.style.borderColor = "#16a34a"); // green
+
       sessionStorage.setItem("tempUser", JSON.stringify({ email, pass }));
       showToast("✅ Registered successfully! Now log in.");
+      showCheckAnimation();
       toggleForm();
       document.getElementById("signinEmail").value = email;
       document.getElementById("signinPassword").value = pass;
@@ -362,24 +384,29 @@
     }
 
     function toggleForm() {
-      signupForm.classList.remove("fade-slide");
-      signinForm.classList.remove("fade-slide");
+  signupForm.classList.remove("fade-slide");
+  signinForm.classList.remove("fade-slide");
 
-      if (signupForm.style.display === "none") {
-        signupForm.style.display = "block";
-        signinForm.style.display = "none";
-        title.textContent = "📝 Sign Up";
-        signupForm.classList.add("fade-slide");
-      } else {
-        signupForm.style.display = "none";
-        signinForm.style.display = "block";
-        title.textContent = "🔐 Sign In";
-        signinForm.classList.add("fade-slide");
-      }
+  // Clear all input fields and reset styles
+  document.querySelectorAll("input").forEach(input => {
+    input.value = "";
+    input.style.borderColor = "#ccc";
+  });
 
-      document.getElementById("message").textContent = "";
-    }
+  if (signupForm.style.display === "none") {
+    signupForm.style.display = "block";
+    signinForm.style.display = "none";
+    title.textContent = "📝 Sign Up";
+    signupForm.classList.add("fade-slide");
+  } else {
+    signupForm.style.display = "none";
+    signinForm.style.display = "block";
+    title.textContent = "🔐 Sign In";
+    signinForm.classList.add("fade-slide");
+  }
 
+  document.getElementById("message").textContent = "";
+}
     function togglePassword(fieldId, btn) {
       const input = document.getElementById(fieldId);
       if (input.type === "password") {
