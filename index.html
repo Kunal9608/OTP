@@ -25,17 +25,13 @@
       max-width: 400px;
       overflow: hidden;
     }
- #signupForm input[type="email"] {
-  margin-bottom: 14px;
-}
-
-#signupForm .pass-wrapper:first-of-type {
-  margin-bottom: 14px; /* Between password and confirm password */
-}
-
-#signinForm input[type="email"] {
-  margin-bottom: 14px;
-}
+    #signupForm input[type="email"],
+    #signinForm input[type="email"] {
+      margin-bottom: 14px;
+    }
+    #signupForm .pass-wrapper:first-of-type {
+      margin-bottom: 14px;
+    }
     .card-header {
       background: #1e40af;
       color: white;
@@ -157,37 +153,37 @@
         transform: translateY(0);
       }
     }
-.pass-wrapper {
-  position: relative;
-  margin-bottom: 14px;
-}
-.pass-wrapper input {
-  width: 100%;
-  padding: 12px 42px 12px 14px; /* left 14px, right 42px for the eye */
-  font-size: 16px;
-  font-weight: bold;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  color: #111;
-  outline: none;
-}
-.eye-btn {
-  position: absolute;
-  right: 12px; /* distance from right edge */
-  top: 50%;    /* vertical center */
-  transform: translateY(-50%);
-  background: none;
-  border: none;
-  cursor: pointer;
-  font-size: 18px;
-  padding: 0;
-  margin: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 24px;
-  width: 24px;
-}
+    .pass-wrapper {
+      position: relative;
+      margin-bottom: 14px;
+    }
+    .pass-wrapper input {
+      width: 100%;
+      padding: 12px 42px 12px 14px;
+      font-size: 16px;
+      font-weight: bold;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      color: #111;
+      outline: none;
+    }
+    .eye-btn {
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 18px;
+      padding: 0;
+      margin: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 24px;
+      width: 24px;
+    }
   </style>
 </head>
 <body>
@@ -196,8 +192,8 @@
     <div class="card-body">
       <div id="signupForm" class="fade-slide">
         <label>Email</label>
-        <input type="email" id="signupEmail" placeholder="you@gmail.com" />
-        
+        <input type="email" id="signupEmail" placeholder="you@example.com" />
+
         <label>Password</label>
         <div class="pass-wrapper">
           <input type="password" id="signupPassword" placeholder="Enter password" inputmode="email" />
@@ -285,30 +281,29 @@
     }
 
     function sendOTP() {
-  const email = document.getElementById("signupEmail").value.trim();
-  const pass = document.getElementById("signupPassword").value.trim();
-  const confirm = document.getElementById("signupConfirm").value.trim();
+      const email = document.getElementById("signupEmail").value.trim();
+      const pass = document.getElementById("signupPassword").value.trim();
+      const confirm = document.getElementById("signupConfirm").value.trim();
 
-  if (!email.endsWith("@gmail.com")) return showToast("❌ Only Gmail allowed!");
-  if (email === "kunaldixit.233860@gmail.com") return showToast("❌ Email already registered!");
-  if (pass.length < 6) return showToast("❌ Password must be at least 6 characters!");
-  if (pass !== confirm) return showToast("❌ Passwords do not match!");
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return showToast("❌ Invalid email format!");
+      if (email === "kunaldixit.233860@gmail.com") return showToast("❌ Email already registered!");
+      if (pass.length < 6) return showToast("❌ Password must be at least 6 characters!");
+      if (pass !== confirm) return showToast("❌ Passwords do not match!");
 
-  generatedOTP = Math.floor(10000 + Math.random() * 90000).toString();
+      generatedOTP = Math.floor(10000 + Math.random() * 90000).toString();
+      showToast("📨 Sending OTP...");
 
-  // ✅ Show sending status toast
-  showToast("📨 Sending OTP...");
-
-  emailjs.send("service_44phjaw", "template_lusyhse", {
-    email: email,
-    otp_code: generatedOTP,
-  }).then(() => {
-    showToast("✅ OTP sent to your email!");
-    startResendTimer();
-  }).catch(() => {
-    showToast("❌ Failed to send OTP!");
-  });
-}
+      emailjs.send("service_44phjaw", "template_lusyhse", {
+        email: email,
+        otp_code: generatedOTP,
+      }).then(() => {
+        showToast("✅ OTP sent to your email!");
+        startResendTimer();
+        otpFields[0].focus();
+      }).catch(() => {
+        showToast("❌ Failed to send OTP!");
+      });
+    }
 
     function startResendTimer() {
       otpBtn.disabled = true;
@@ -335,16 +330,20 @@
 
       if (!email || !pass || !confirm || enteredOTP.length !== 5)
         return showToast("❌ All fields and 5-digit OTP are required");
-      if (!email.endsWith("@gmail.com")) return showToast("❌ Only Gmail allowed");
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return showToast("❌ Invalid email format");
       if (email === "kunaldixit.233860@gmail.com") return showToast("❌ Email already registered");
       if (pass.length < 6 || pass !== confirm) return showToast("❌ Passwords must match & be 6+ chars");
-      if (enteredOTP !== generatedOTP) return showToast("❌ Incorrect OTP");
+      if (enteredOTP !== generatedOTP) {
+        otpFields.forEach(f => f.style.borderColor = "#dc2626");
+        return showToast("❌ Incorrect OTP");
+      }
 
       sessionStorage.setItem("tempUser", JSON.stringify({ email, pass }));
       showToast("✅ Registered successfully! Now log in.");
       toggleForm();
       document.getElementById("signinEmail").value = email;
       document.getElementById("signinPassword").value = pass;
+      localStorage.setItem("lastEmail", email);
     }
 
     function verifySignin() {
@@ -391,6 +390,14 @@
         btn.textContent = "👁";
       }
     }
+
+    window.addEventListener("load", () => {
+      const last = localStorage.getItem("lastEmail");
+      if (last) {
+        document.getElementById("signupEmail").value = last;
+        document.getElementById("signinEmail").value = last;
+      }
+    });
   </script>
 </body>
 </html>
