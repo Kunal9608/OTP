@@ -246,6 +246,33 @@
         alert("❌ Failed to generate PDF. Try again.");
       }
     });
+  // 🔒 Auth Guard: Check if user is logged in
+  window.addEventListener('DOMContentLoaded', () => {
+    const savedUser = sessionStorage.getItem('tempUser'); // From signup flow
+    const hardCodedEmail = "kunaldixit.233860@gmail.com";
+    const hardCodedPass = "123456";
+    const emailInput = document.getElementById("signinEmail")?.value.trim();
+    const passInput = document.getElementById("signinPassword")?.value.trim();
+
+    // Simulate login check using hardcoded credentials OR saved session
+    const isLoggedIn = 
+      // Case 1: User signed up & stored in session
+      !!savedUser ||
+      // Case 2: Using default test credentials (only if already on signin form)
+      (emailInput === hardCodedEmail && passInput === hardCodedPass);
+
+    // But since we can't access input fields from dashboard, rely on:
+    // - tempUser (signup), OR set a flag like localStorage.isLoggedIn on login
+
+    // ✅ Best approach: Set flag during login → check it here
+    const loginConfirmed = localStorage.getItem('isLoggedIn') === 'true';
+
+    if (!loginConfirmed && !savedUser) {
+      // ❌ Not authenticated → redirect to login
+      window.location.replace('index.html');
+    }
+    // ✅ Else: stay on dashboard
+  });
   </script>
 </body>
 </html>
