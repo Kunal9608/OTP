@@ -35,6 +35,17 @@
 
   <style>
     body {
+      <!-- 🔒 AUTH GUARD: Redirect if not logged in -->
+<script>
+  (() => {
+    const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
+    const hasSessionUser = sessionStorage.getItem('tempUser') !== null;
+
+    if (!isLoggedIn && !hasSessionUser) {
+      window.location.replace('index.html');
+    }
+  })();
+</script>
       font-family: 'Inter', sans-serif;
     }
     .pdf-preview {
