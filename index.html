@@ -369,18 +369,25 @@
     }
 
     function verifySignin() {
-      const email = document.getElementById("signinEmail").value.trim();
-      const pass = document.getElementById("signinPassword").value.trim();
-      const saved = JSON.parse(sessionStorage.getItem("tempUser"));
+  const email = document.getElementById("signinEmail").value.trim();
+  const pass = document.getElementById("signinPassword").value.trim();
+  const saved = JSON.parse(sessionStorage.getItem("tempUser"));
 
-      if (
-        (email === "kunaldixit.233860@gmail.com" && pass === "123456") ||
-        (saved && saved.email === email && saved.pass === pass)
-      ) {
-        showToast("✅ Logged in successfully!");
-      } else {
-        showToast("❌ Invalid credentials");
-      }
+  if (
+    (email === "kunaldixit.233860@gmail.com" && pass === "123456") ||
+    (saved && saved.email === email && saved.pass === pass)
+  ) {
+    // ✅ Login successful — save state & redirect
+    localStorage.setItem('isLoggedIn', 'true'); // Mark as logged in
+    showToast("✅ Logged in successfully!");
+    
+    // Redirect to dashboard after 1 second
+    setTimeout(() => {
+      window.location.href = 'dashboard.html'; // ← This is the key line
+    }, 1000);
+  } else {
+    showToast("❌ Invalid credentials");
+  }
     }
 
     function toggleForm() {
